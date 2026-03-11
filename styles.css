@@ -166,14 +166,15 @@ body {
 
 .frame {
   aspect-ratio: 1512 / 982;
-  width: min(100%, calc((100vh - 32px) * 1512 / 982));
-  min-width: 400px;
+  width: min(calc(100% - 100px), calc((100vh - 132px) * 1512 / 982));
+  min-width: 300px;
   height: auto;
-  max-height: 100%;
+  max-height: calc(100% - 100px);
   overflow: hidden;
   background: #ffffff;
   position: relative;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06), 0 4px 24px rgba(0, 0, 0, 0.08);
+  margin: auto;
 }
 
 #canvas {
