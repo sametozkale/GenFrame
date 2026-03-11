@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GenFrame</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <button id="sidebarToggle" type="button" class="sidebar-toggle" aria-label="Toggle sidebar">
+      <span class="hamburger"></span>
+    </button>
+    <div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <aside class="sidebar" id="sidebar">
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">ANIMATION</h3>
+        <div class="control-group">
+          <label for="rowsSelect">Rows</label>
+          <select id="rowsSelect" aria-label="Number of rows">
+            <option value="5" selected>5</option>
+            <option value="4">4</option>
+            <option value="3">3</option>
+            <option value="2">2</option>
+            <option value="1">1</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="speedSelect">Speed</label>
+          <select id="speedSelect" aria-label="Shape change speed">
+            <option value="slow">Slow</option>
+            <option value="normal" selected>Normal</option>
+            <option value="fast">Fast</option>
+            <option value="very-fast">Very Fast</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="densitySelect">Density</label>
+          <select id="densitySelect" aria-label="Fill density">
+            <option value="20">20%</option>
+            <option value="33" selected>33%</option>
+            <option value="50">50%</option>
+            <option value="70">70%</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <button id="toggleBtn" type="button" class="btn-glass">Stop</button>
+        </div>
+      </section>
+      <hr class="sidebar-divider">
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">Appearance</h3>
+        <div class="control-group">
+          <label for="colorThemeSelect">Color theme</label>
+          <select id="colorThemeSelect" aria-label="Color theme">
+            <option value="default" selected>Default</option>
+            <option value="wonder">Wonder</option>
+            <option value="blue">Blue</option>
+            <option value="purple">Purple</option>
+            <option value="warm">Warm</option>
+            <option value="monochrome">Monochrome</option>
+            <option value="pastel">Pastel</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="shapeFilterSelect">Shape filter</label>
+          <select id="shapeFilterSelect" aria-label="Shape filter">
+            <option value="all" selected>All</option>
+            <option value="circles">Circles only</option>
+            <option value="geometric">Geometric</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="sizeSelect">Shape size</label>
+          <select id="sizeSelect" aria-label="Shape size">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="opacitySelect">Opacity</label>
+          <select id="opacitySelect" aria-label="Opacity">
+            <option value="subtle">Subtle</option>
+            <option value="normal" selected>Normal</option>
+            <option value="bold">Bold</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="marginSelect">Margin</label>
+          <select id="marginSelect" aria-label="Edge margin">
+            <option value="tight">Tight</option>
+            <option value="normal" selected>Normal</option>
+            <option value="wide">Wide</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="easingSelect">Easing</label>
+          <select id="easingSelect" aria-label="Easing style">
+            <option value="expo" selected>Expo</option>
+            <option value="smooth">Smooth</option>
+            <option value="sharp">Sharp</option>
+          </select>
+        </div>
+      </section>
+      <hr class="sidebar-divider">
+      <section class="sidebar-section actions-section">
+        <h3 class="sidebar-title">ACTIONS</h3>
+        <div class="control-group">
+          <button id="resetBtn" type="button" class="btn-glass">Reset</button>
+        </div>
+        <div class="control-group">
+          <button id="randomizeBtn" type="button" class="btn-glass">Randomize</button>
+        </div>
+        <div class="control-group">
+          <button id="exportPngBtn" type="button" class="btn-glass">Export PNG</button>
+        </div>
+        <div class="control-group">
+          <button id="fullscreenBtn" type="button" class="btn-glass">Fullscreen</button>
+        </div>
+      </section>
+    </aside>
+    <main class="main">
+      <div class="frame" id="frame">
+        <canvas id="canvas" width="1512" height="982" role="img" aria-label="Decorative border animation with shapes"></canvas>
+      </div>
+    </main>
+  </div>
+  <script src="animation.js"></script>
+</body>
+</html>

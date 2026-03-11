@@ -1,0 +1,9 @@
+# IDE / Editor
+.cursor/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
