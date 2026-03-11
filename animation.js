@@ -63,9 +63,9 @@ const OPACITY_PRESETS = { subtle: [0.3, 0.6], normal: [0.55, 1], bold: [0.75, 1]
 const MARGIN_PRESETS = { tight: 4, normal: 6, wide: 10 };
 
 const DEFAULT_CONFIG = {
-  rows: 5,
-  speed: 'normal',
-  density: '33',
+  rows: 3,
+  speed: 'slow',
+  density: '50',
   colorTheme: 'default',
   shapeFilter: 'all',
   size: 'medium',
