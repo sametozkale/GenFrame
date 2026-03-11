@@ -260,7 +260,7 @@ function getRandomFreeSlotIndex(slotCount, occupiedSet) {
   return free.length ? free[Math.floor(Math.random() * free.length)] : -1;
 }
 
-/** Position-based: aynı (x,y) konumundaki slotlar tek şekil alır (köşe overlap önlenir) */
+/** Position-based: slots at the same (x,y) share one shape (prevents corner overlap) */
 function getRandomFreeSlotIndexByPosition(slots, occupiedPositions) {
   const free = [];
   for (let i = 0; i < slots.length; i++) {
@@ -271,7 +271,7 @@ function getRandomFreeSlotIndexByPosition(slots, occupiedPositions) {
 }
 
 /**
- * Active shape – konum bazlı doluluk (köşelerde overlap önlenir)
+ * Active shape – position-based occupancy (prevents overlap at corners)
  */
 function createActiveShape(slots, occupiedPositions, speedConfig, shapePool, colorPool, opacityRange) {
   const slotIndex = getRandomFreeSlotIndexByPosition(slots, occupiedPositions);
