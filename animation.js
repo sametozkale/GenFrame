@@ -174,7 +174,7 @@ function drawShape(ctx, x, y, size, type, color, alpha, scale, edge) {
       ctx.lineTo(-half, half);
       ctx.closePath();
       ctx.fill();
-      ctx.lineWidth = 0.5;
+      ctx.lineWidth = 1;
       ctx.strokeStyle = color;
       ctx.globalAlpha = alpha * 0.3;
       ctx.stroke();
@@ -201,7 +201,7 @@ function drawShape(ctx, x, y, size, type, color, alpha, scale, edge) {
       }
       ctx.closePath();
       ctx.fill();
-      ctx.lineWidth = 0.5;
+      ctx.lineWidth = 1;
       ctx.strokeStyle = color;
       ctx.globalAlpha = alpha * 0.3;
       ctx.stroke();
@@ -218,7 +218,7 @@ function drawShape(ctx, x, y, size, type, color, alpha, scale, edge) {
       }
       ctx.closePath();
       ctx.fill();
-      ctx.lineWidth = 0.5;
+      ctx.lineWidth = 1;
       ctx.strokeStyle = color;
       ctx.globalAlpha = alpha * 0.3;
       ctx.stroke();
@@ -368,7 +368,7 @@ function getShapeAlpha(shape, now, easeOut, easeIn) {
   }
 }
 
-function init() {
+function initBorderAnimation() {
   const canvas = document.getElementById('canvas');
   const frameEl = document.getElementById('frame');
   if (!canvas) return;
@@ -792,8 +792,499 @@ function init() {
   rafId = requestAnimationFrame(loop);
 }
 
+// --- View navigation ---
+
+const ROUTES = {
+  home: '/',
+  genframe: '/genframe',
+  alternative2: '/alternative-2',
+  alternative3: '/alternative-3'
+};
+
+function setupViewNavigation() {
+  const home = document.getElementById('homeScreen');
+  const app = document.getElementById('appScreen');
+  const alt = document.getElementById('altScreen');
+  const alt3 = document.getElementById('alt3Screen');
+
+  const goGenFrameBtn = document.getElementById('goGenFrameBtn');
+  const goAlt2Btn = document.getElementById('goAlt2Btn');
+  const goAlt3Btn = document.getElementById('goAlt3Btn');
+  const backHomeFromAltBtn = document.getElementById('backHomeFromAltBtn');
+  const backHomeFromAlt3Btn = document.getElementById('backHomeFromAlt3Btn');
+
+  function showHome() {
+    if (home) home.classList.remove('app-hidden', 'alt-hidden');
+    if (app) app.classList.add('app-hidden');
+    if (alt) alt.classList.add('alt-hidden');
+    if (alt3) alt3.classList.add('alt-hidden');
+  }
+
+  function showGenFrame() {
+    if (home) home.classList.add('app-hidden');
+    if (app) app.classList.remove('app-hidden');
+    if (alt) alt.classList.add('alt-hidden');
+    if (alt3) alt3.classList.add('alt-hidden');
+  }
+
+  function showAlt() {
+    if (home) home.classList.add('app-hidden');
+    if (app) app.classList.add('app-hidden');
+    if (alt) alt.classList.remove('alt-hidden');
+    if (alt3) alt3.classList.add('alt-hidden');
+  }
+
+  function showAlt3() {
+    if (home) home.classList.add('app-hidden');
+    if (app) app.classList.add('app-hidden');
+    if (alt) alt.classList.add('alt-hidden');
+    if (alt3) alt3.classList.remove('alt-hidden');
+    const alt3FrameStatusWrap = document.getElementById('alt3FrameStatusWrap');
+    const alt3FrameContainer = document.getElementById('alt3FrameContainer');
+    if (alt3FrameStatusWrap && alt3FrameContainer) {
+      alt3FrameStatusWrap.classList.add('shimmer');
+      alt3FrameContainer.classList.add('running');
+      requestAnimationFrame(() => {
+        alt3SkeletonControls?.start();
+      });
+    }
+  }
+
+  function getPath() {
+    const hash = (location.hash || '#/').replace(/^#/, '') || '/';
+    return hash.startsWith('/') ? hash : '/' + hash;
+  }
+
+  function navigateTo(route) {
+    const path = route === ROUTES.home ? '' : route;
+    const url = path ? location.pathname + location.search + '#' + path : location.pathname + location.search;
+    history.pushState(null, '', url);
+    if (route === ROUTES.home || route === '/home') {
+      showHome();
+    } else if (route === ROUTES.genframe) {
+      showGenFrame();
+    } else if (route === ROUTES.alternative2) {
+      showAlt();
+    } else if (route === ROUTES.alternative3) {
+      showAlt3();
+    }
+  }
+
+  function syncViewFromUrl() {
+    const path = getPath();
+    if (path === ROUTES.genframe) {
+      showGenFrame();
+    } else if (path === ROUTES.alternative2) {
+      showAlt();
+    } else if (path === ROUTES.alternative3) {
+      showAlt3();
+    } else {
+      showHome();
+    }
+  }
+
+  if (goGenFrameBtn) {
+    goGenFrameBtn.addEventListener('click', () => navigateTo(ROUTES.genframe));
+  }
+  if (goAlt2Btn) {
+    goAlt2Btn.addEventListener('click', () => navigateTo(ROUTES.alternative2));
+  }
+  if (goAlt3Btn) {
+    goAlt3Btn.addEventListener('click', () => navigateTo(ROUTES.alternative3));
+  }
+  if (backHomeFromAltBtn) {
+    backHomeFromAltBtn.addEventListener('click', () => navigateTo(ROUTES.home));
+  }
+  if (backHomeFromAlt3Btn) {
+    backHomeFromAlt3Btn.addEventListener('click', () => navigateTo(ROUTES.home));
+  }
+
+  const altStartBtn = document.getElementById('altStartBtn');
+  const altStopBtn = document.getElementById('altStopBtn');
+  const altFrameStatusWrap = document.getElementById('altFrameStatusWrap');
+  const altFrameContainer = document.getElementById('altFrameContainer');
+  const altFrameAnimationSelect = document.getElementById('altFrameAnimationSelect');
+  const altFlickeringGrid = document.getElementById('altFlickeringGrid');
+  const altRipple = document.getElementById('altRipple');
+
+  function getAltFrameAnimationType() {
+    return altFrameAnimationSelect?.value || 'flickering';
+  }
+
+  function syncAltFrameAnimation() {
+    const type = getAltFrameAnimationType();
+    const isRunning = altFrameContainer?.classList.contains('running');
+    if (altFlickeringGrid) {
+      altFlickeringGrid.classList.toggle('alt-frame-anim-active', isRunning && type === 'flickering');
+    }
+    if (altRipple) {
+      altRipple.classList.toggle('alt-frame-anim-active', isRunning && type === 'ripple');
+      altRipple.setAttribute('aria-hidden', isRunning && type === 'ripple' ? 'false' : 'true');
+    }
+    if (type === 'flickering' && isRunning) {
+      altFlickeringGridControls?.start();
+    } else {
+      altFlickeringGridControls?.stop();
+    }
+  }
+
+  if (altStartBtn && altStopBtn && altFrameStatusWrap && altFrameContainer) {
+    altStartBtn.addEventListener('click', () => {
+      altFrameStatusWrap.classList.add('shimmer');
+      altFrameContainer.classList.add('running');
+      syncAltFrameAnimation();
+    });
+    altStopBtn.addEventListener('click', () => {
+      altFrameStatusWrap.classList.remove('shimmer');
+      altFrameContainer.classList.remove('running');
+      if (altFlickeringGrid) altFlickeringGrid.classList.remove('alt-frame-anim-active');
+      if (altRipple) {
+        altRipple.classList.remove('alt-frame-anim-active');
+        altRipple.setAttribute('aria-hidden', 'true');
+      }
+      altFlickeringGridControls?.stop();
+    });
+  }
+
+  if (altFrameAnimationSelect) {
+    altFrameAnimationSelect.addEventListener('change', () => {
+      syncAltFrameAnimation();
+    });
+  }
+
+  const alt3StartBtn = document.getElementById('alt3StartBtn');
+  const alt3StopBtn = document.getElementById('alt3StopBtn');
+  const alt3FrameStatusWrap = document.getElementById('alt3FrameStatusWrap');
+  const alt3FrameContainer = document.getElementById('alt3FrameContainer');
+  if (alt3StartBtn && alt3StopBtn && alt3FrameStatusWrap && alt3FrameContainer) {
+    alt3StartBtn.addEventListener('click', () => {
+      alt3FrameStatusWrap.classList.add('shimmer');
+      alt3FrameContainer.classList.add('running');
+      alt3SkeletonControls?.start();
+    });
+    alt3StopBtn.addEventListener('click', () => {
+      alt3FrameStatusWrap.classList.remove('shimmer');
+      alt3FrameContainer.classList.remove('running');
+      alt3SkeletonControls?.stop();
+    });
+  }
+
+  const altSidebarToggle = document.getElementById('altSidebarToggle');
+  const altSidebar = document.getElementById('altSidebar');
+  const altSidebarOverlay = document.getElementById('altSidebarOverlay');
+  if (altSidebarToggle && altSidebar) {
+    const openAltSidebar = () => {
+      altSidebar.classList.add('open');
+      altSidebarToggle.classList.add('active');
+      altSidebarToggle.setAttribute('aria-expanded', 'true');
+      if (altSidebarOverlay) {
+        altSidebarOverlay.classList.add('visible');
+        altSidebarOverlay.setAttribute('aria-hidden', 'false');
+      }
+    };
+    const closeAltSidebar = () => {
+      altSidebar.classList.remove('open');
+      altSidebarToggle.classList.remove('active');
+      altSidebarToggle.setAttribute('aria-expanded', 'false');
+      if (altSidebarOverlay) {
+        altSidebarOverlay.classList.remove('visible');
+        altSidebarOverlay.setAttribute('aria-hidden', 'true');
+      }
+    };
+    altSidebarToggle.addEventListener('click', () => {
+      if (altSidebar.classList.contains('open')) closeAltSidebar();
+      else openAltSidebar();
+    });
+    if (altSidebarOverlay) {
+      altSidebarOverlay.addEventListener('click', closeAltSidebar);
+    }
+  }
+
+  const alt3SidebarToggle = document.getElementById('alt3SidebarToggle');
+  const alt3Sidebar = document.getElementById('alt3Sidebar');
+  const alt3SidebarOverlay = document.getElementById('alt3SidebarOverlay');
+  if (alt3SidebarToggle && alt3Sidebar) {
+    const openAlt3Sidebar = () => {
+      alt3Sidebar.classList.add('open');
+      alt3SidebarToggle.classList.add('active');
+      alt3SidebarToggle.setAttribute('aria-expanded', 'true');
+      if (alt3SidebarOverlay) {
+        alt3SidebarOverlay.classList.add('visible');
+        alt3SidebarOverlay.setAttribute('aria-hidden', 'false');
+      }
+    };
+    const closeAlt3Sidebar = () => {
+      alt3Sidebar.classList.remove('open');
+      alt3SidebarToggle.classList.remove('active');
+      alt3SidebarToggle.setAttribute('aria-expanded', 'false');
+      if (alt3SidebarOverlay) {
+        alt3SidebarOverlay.classList.remove('visible');
+        alt3SidebarOverlay.setAttribute('aria-hidden', 'true');
+      }
+    };
+    alt3SidebarToggle.addEventListener('click', () => {
+      if (alt3Sidebar.classList.contains('open')) closeAlt3Sidebar();
+      else openAlt3Sidebar();
+    });
+    if (alt3SidebarOverlay) {
+      alt3SidebarOverlay.addEventListener('click', closeAlt3Sidebar);
+    }
+  }
+
+  window.addEventListener('popstate', syncViewFromUrl);
+  window.addEventListener('hashchange', syncViewFromUrl);
+  syncViewFromUrl();
+}
+
+// --- Flickering Grid (Magic UI style) ---
+
+function initFlickeringGrid(canvasId, containerId, frameContainerId) {
+  const canvas = document.getElementById(canvasId);
+  const container = document.getElementById(containerId);
+  const frameContainer = document.getElementById(frameContainerId);
+  if (!canvas || !container || !frameContainer) return null;
+
+  const squareSize = 4;
+  const gridGap = 6;
+  const flickerChance = 0.45;
+  const maxOpacity = 0.5;
+  const color = '#DE68C1';
+
+  let cols = 0;
+  let rows = 0;
+  let squares = null;
+  let dpr = 1;
+  let rafId = null;
+  let lastTime = 0;
+
+  function toRGBA(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b},`;
+  }
+
+  const colorRGBA = toRGBA(color);
+
+  function setupCanvas() {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w <= 0 || h <= 0) return;
+
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+
+    cols = Math.ceil(w / (squareSize + gridGap));
+    rows = Math.ceil(h / (squareSize + gridGap));
+    squares = new Float32Array(cols * rows);
+    for (let i = 0; i < squares.length; i++) {
+      squares[i] = Math.random() * maxOpacity;
+    }
+  }
+
+  function updateSquares(deltaTime) {
+    if (!squares) return;
+    for (let i = 0; i < squares.length; i++) {
+      if (Math.random() < flickerChance * deltaTime) {
+        squares[i] = Math.random() * maxOpacity;
+      }
+    }
+  }
+
+  function drawGrid(ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < cols; i++) {
+      for (let j = 0; j < rows; j++) {
+        const opacity = squares[i * rows + j];
+        ctx.fillStyle = colorRGBA + opacity + ')';
+        ctx.fillRect(
+          i * (squareSize + gridGap) * dpr,
+          j * (squareSize + gridGap) * dpr,
+          squareSize * dpr,
+          squareSize * dpr
+        );
+      }
+    }
+  }
+
+  function animate(time) {
+    if (!frameContainer.classList.contains('running') || !squares) {
+      rafId = null;
+      return;
+    }
+    rafId = requestAnimationFrame(animate);
+    const deltaTime = (time - lastTime) / 1000;
+    lastTime = time;
+    updateSquares(deltaTime);
+    const ctx = canvas.getContext('2d');
+    if (ctx) drawGrid(ctx);
+  }
+
+  function start() {
+    if (frameContainer.classList.contains('running')) {
+      setupCanvas();
+      lastTime = performance.now();
+      rafId = requestAnimationFrame(animate);
+    }
+  }
+
+  function stop() {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+  }
+
+  const resizeObserver = new ResizeObserver(() => {
+    if (frameContainer.classList.contains('running')) {
+      setupCanvas();
+    }
+  });
+  resizeObserver.observe(container);
+
+  return { start, stop };
+}
+
+let altFlickeringGridControls = null;
+let alt3SkeletonControls = null;
+
+// --- Alternative 3: Skeleton fill/empty cycle ---
+
+function initSkeletonFillAnimation(skeletonId, frameContainerId) {
+  const skeletonEl = document.getElementById(skeletonId);
+  const frameContainer = document.getElementById(frameContainerId);
+  if (!skeletonEl || !frameContainer) return null;
+
+  const FILL_DURATION_MS = 4200;
+  const EMPTY_DURATION_MS = 700;
+  const CYCLE_DURATION_MS = FILL_DURATION_MS + EMPTY_DURATION_MS;
+
+  let cycleTimeoutId = null;
+  let isRunning = false;
+
+  function randomBetween(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function generateRandomLayout() {
+    const rect = skeletonEl.getBoundingClientRect();
+    const w = rect.width;
+    const h = rect.height;
+    if (w <= 0 || h <= 0) return [];
+
+    const gap = 20;
+    const blocks = [];
+    let y = 0;
+
+    const heightPresets = [24, 28, 36, 44, 52, 64];
+
+    while (y < h - 8) {
+      const layoutType = Math.random();
+      let blockH = heightPresets[Math.floor(Math.random() * heightPresets.length)];
+
+      if (layoutType < 0.35) {
+        blocks.push({ x: 0, y, width: w, height: blockH, delay: blocks.length * 50 + Math.random() * 60 });
+      } else if (layoutType < 0.65) {
+        const leftW = w * (0.4 + Math.random() * 0.35);
+        blocks.push({ x: 0, y, width: leftW, height: blockH, delay: blocks.length * 50 + Math.random() * 60 });
+        blocks.push({ x: leftW + gap, y, width: w - leftW - gap, height: blockH, delay: blocks.length * 50 + Math.random() * 60 });
+      } else {
+        const centerW = w * (0.35 + Math.random() * 0.35);
+        const centerX = (w - centerW) / 2;
+        blocks.push({ x: centerX, y, width: centerW, height: blockH, delay: blocks.length * 50 + Math.random() * 60 });
+      }
+      y += blockH + gap;
+    }
+
+    return blocks;
+  }
+
+  function fillFrame() {
+    if (!frameContainer.classList.contains('running')) return;
+
+    skeletonEl.innerHTML = '';
+    const layout = generateRandomLayout();
+
+    layout.forEach((block, i) => {
+      const el = document.createElement('div');
+      el.className = 'alt3-skeleton-item';
+      el.style.left = block.x + 'px';
+      el.style.top = block.y + 'px';
+      el.style.width = block.width + 'px';
+      el.style.height = block.height + 'px';
+      el.style.transitionDelay = block.delay + 'ms';
+      skeletonEl.appendChild(el);
+    });
+  }
+
+  function emptyFrame() {
+    const items = skeletonEl.querySelectorAll('.alt3-skeleton-item');
+    items.forEach((el, i) => {
+      el.style.transitionDelay = i * 25 + 'ms';
+      el.classList.add('alt3-skeleton-item-out');
+    });
+  }
+
+  function runCycle() {
+    if (!frameContainer.classList.contains('running')) {
+      isRunning = false;
+      skeletonEl.innerHTML = '';
+      return;
+    }
+    isRunning = true;
+    fillFrame();
+
+    cycleTimeoutId = setTimeout(() => {
+      if (!frameContainer.classList.contains('running')) {
+        isRunning = false;
+        return;
+      }
+      emptyFrame();
+
+      cycleTimeoutId = setTimeout(() => {
+        runCycle();
+      }, EMPTY_DURATION_MS);
+    }, FILL_DURATION_MS);
+  }
+
+  function start() {
+    if (!frameContainer.classList.contains('running')) return;
+    if (cycleTimeoutId) clearTimeout(cycleTimeoutId);
+    runCycle();
+  }
+
+  function stop() {
+    if (cycleTimeoutId) {
+      clearTimeout(cycleTimeoutId);
+      cycleTimeoutId = null;
+    }
+    isRunning = false;
+    skeletonEl.innerHTML = '';
+  }
+
+  const resizeObserver = new ResizeObserver(() => {
+    if (isRunning && frameContainer.classList.contains('running')) {
+      stop();
+      start();
+    }
+  });
+  resizeObserver.observe(skeletonEl);
+
+  return { start, stop };
+}
+
+function initAll() {
+  initBorderAnimation();
+  altFlickeringGridControls = initFlickeringGrid('altFlickeringGrid', 'altFrameInner', 'altFrameContainer');
+  alt3SkeletonControls = initSkeletonFillAnimation('alt3Skeleton', 'alt3FrameContainer');
+  setupViewNavigation();
+}
+
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init);
+  document.addEventListener('DOMContentLoaded', initAll);
 } else {
-  init();
+  initAll();
 }

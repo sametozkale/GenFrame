@@ -3,14 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GenFrame</title>
+  <title>Wonder Animation Lab</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app">
+  <div id="homeScreen" class="home">
+    <div class="home-inner">
+      <header class="home-header">
+        <div class="home-brand">
+          <img src="wonder-color.svg" alt="" class="home-brand-icon" />
+          <span class="home-brand-text">Wonder Animation Lab</span>
+        </div>
+        <p class="home-tagline">
+          Switch quickly between different generators,<br>from border frames to rhythmic waves.
+        </p>
+      </header>
+      <main class="home-main">
+        <h1 class="home-title">Welcome to the<br>animation playground</h1>
+        <p class="home-subtitle">
+          Pick a tool below. Jump to another anytime.
+        </p>
+        <div class="home-actions">
+          <button id="goGenFrameBtn" type="button" class="home-btn home-btn-rainbow">
+            GenFrame Studio
+          </button>
+          <button id="goAlt2Btn" type="button" class="home-btn secondary">
+            Wonder Preview
+          </button>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="appScreen" class="app app-hidden">
     <button id="sidebarToggle" type="button" class="sidebar-toggle" aria-label="Toggle sidebar">
       <span class="hamburger"></span>
     </button>
@@ -126,6 +154,107 @@
     <main class="main">
       <div class="frame" id="frame">
         <canvas id="canvas" width="1512" height="982" role="img" aria-label="Decorative border animation with shapes"></canvas>
+      </div>
+    </main>
+  </div>
+
+  <div id="altScreen" class="alt-app alt-hidden">
+    <button id="altSidebarToggle" type="button" class="sidebar-toggle" aria-label="Toggle sidebar">
+      <span class="hamburger"></span>
+    </button>
+    <div id="altSidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <aside class="sidebar alt-sidebar" id="altSidebar">
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">CONTROLS</h3>
+        <div class="control-group">
+          <label for="altFrameAnimationSelect">Frame animation</label>
+          <select id="altFrameAnimationSelect" aria-label="Frame animation type">
+            <option value="flickering" selected>Flickering</option>
+            <option value="ripple">Ripple</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <button id="altStartBtn" type="button" class="btn-glass">Start</button>
+        </div>
+        <div class="control-group">
+          <button id="altStopBtn" type="button" class="btn-glass">Stop</button>
+        </div>
+      </section>
+      <hr class="sidebar-divider">
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">NAVIGATION</h3>
+        <div class="control-group">
+          <button id="backHomeFromAltBtn" type="button" class="btn-glass">Back to Home</button>
+        </div>
+      </section>
+    </aside>
+    <main class="alt-main">
+      <div class="alt-canvas"></div>
+      <div class="alt-frame-wrap">
+        <span class="alt-frame-status-wrap" id="altFrameStatusWrap">
+          <img src="wonder-color.svg" alt="Wonder" class="alt-frame-status-icon" />
+          <span class="alt-frame-status-text">Wondering...</span>
+        </span>
+        <div class="alt-frame-container" id="altFrameContainer">
+          <div class="alt-shine-border" id="altShineBorder"></div>
+          <div class="alt-frame">
+            <div class="alt-frame-inner" id="altFrameInner">
+              <canvas id="altFlickeringGrid" class="alt-flickering-grid alt-frame-anim"></canvas>
+              <div id="altRipple" class="alt-ripple alt-frame-anim" aria-hidden="true">
+                <div class="alt-ripple-circle" style="--i: 0; --size: 210px; --opacity: 0.24; --delay: 0s;"></div>
+                <div class="alt-ripple-circle" style="--i: 1; --size: 280px; --opacity: 0.21; --delay: 0.06s;"></div>
+                <div class="alt-ripple-circle" style="--i: 2; --size: 350px; --opacity: 0.18; --delay: 0.12s;"></div>
+                <div class="alt-ripple-circle" style="--i: 3; --size: 420px; --opacity: 0.15; --delay: 0.18s;"></div>
+                <div class="alt-ripple-circle" style="--i: 4; --size: 490px; --opacity: 0.12; --delay: 0.24s;"></div>
+                <div class="alt-ripple-circle" style="--i: 5; --size: 560px; --opacity: 0.09; --delay: 0.3s;"></div>
+                <div class="alt-ripple-circle" style="--i: 6; --size: 630px; --opacity: 0.06; --delay: 0.36s;"></div>
+                <div class="alt-ripple-circle" style="--i: 7; --size: 700px; --opacity: 0.03; --delay: 0.42s;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="alt3Screen" class="alt-app alt-hidden">
+    <button id="alt3SidebarToggle" type="button" class="sidebar-toggle" aria-label="Toggle sidebar">
+      <span class="hamburger"></span>
+    </button>
+    <div id="alt3SidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
+    <aside class="sidebar alt-sidebar" id="alt3Sidebar">
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">CONTROLS</h3>
+        <div class="control-group">
+          <button id="alt3StartBtn" type="button" class="btn-glass">Start</button>
+        </div>
+        <div class="control-group">
+          <button id="alt3StopBtn" type="button" class="btn-glass">Stop</button>
+        </div>
+      </section>
+      <hr class="sidebar-divider">
+      <section class="sidebar-section">
+        <h3 class="sidebar-title">NAVIGATION</h3>
+        <div class="control-group">
+          <button id="backHomeFromAlt3Btn" type="button" class="btn-glass">Back to Home</button>
+        </div>
+      </section>
+    </aside>
+    <main class="alt-main">
+      <div class="alt-canvas"></div>
+      <div class="alt-frame-wrap">
+        <span class="alt-frame-status-wrap" id="alt3FrameStatusWrap">
+          <img src="wonder-color.svg" alt="Wonder" class="alt-frame-status-icon" />
+          <span class="alt-frame-status-text">Wondering...</span>
+        </span>
+        <div class="alt-frame-container" id="alt3FrameContainer">
+          <div class="alt-shine-border" id="alt3ShineBorder"></div>
+          <div class="alt-frame">
+            <div class="alt-frame-inner alt3-frame-inner" id="alt3FrameInner">
+              <div class="alt3-skeleton" id="alt3Skeleton"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
